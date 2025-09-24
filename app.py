@@ -1,108 +1,107 @@
 import os
 from flask import Flask, request, jsonify, render_template
-from openai import OpenAI
 from dotenv import load_dotenv
 import PyPDF2
 import io
-import json  
+import json
+
+
+import google.generativeai as genai
+
 
 load_dotenv()
 
 app = Flask(__name__)
 
-client = OpenAI(api_key=os.getenv("API_KEY"))
+try:
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+except Exception as e:
+    print(f"Erro ao configurar a API do Gemini. Verifique sua chave de API no .env: {e}")
 
-def extract_text_from_pdf(file_stream):
-    """Extract text from a PDF file."""
+def extrair_texto_do_pdf(fluxo_do_arquivo):
+    """Extrai o texto de um arquivo PDF."""
     try:
-        reader = PyPDF2.PdfReader(file_stream)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() or ""
-        return text
+        leitor = PyPDF2.PdfReader(fluxo_do_arquivo)
+        texto = ""
+        for pagina in leitor.pages:
+            texto += pagina.extract_text() or ""
+        return texto
     except Exception as e:
-        print(f"Error reading PDF: {e}")
+        print(f"Erro ao ler o PDF: {e}")
         return None
 
-def analyze_email_with_ai_advanced(email_content):
+def analisar_email_com_ia(conteudo_email):
     """
-    Uses OpenAI API with an advanced prompt for full email analysis.
+    Usa a API do Google Gemini com um prompt avançado para análise completa do email.
     """
+    modelo = genai.GenerativeModel('gemini-1.5-flash')
+
+    prompt = f"""
+    Você é um especialista em análise de emails para uma empresa financeira. Analise o email abaixo e retorne um objeto JSON.
+
+    O objeto JSON deve ter a seguinte estrutura:
+    - "categoria": Classifique o email como "Suporte Técnico", "Questão Financeira", "Geral", ou "Improdutivo".
+    - "urgencia": Classifique a urgência como "Alta", "Média", ou "Baixa".
+    - "confianca": Um número de 0.0 a 1.0 indicando sua confiança na classificação da categoria.
+    - "entidades": Um objeto contendo informações extraídas. Se não encontrar, retorne null para o campo.
+        - "remetente": Nome da pessoa ou empresa que enviou o email.
+        - "numero_ticket": Qualquer protocolo, ticket ou ID de solicitação.
+        - "empresa": Nome da empresa mencionada, se houver.
+    - "resposta_sugerida": Uma resposta profissional em português baseada na categoria e no conteúdo. Para urgência alta, a resposta deve ser mais rápida.
+
+    Email para analisar:
+    ---
+    {conteudo_email}
+    ---
+
+    Retorne APENAS o objeto JSON válido, sem nenhum texto ou explicação extra.
+    """
+
     try:
-        prompt = f"""
-        You are an email analysis specialist for a financial company. Analyze the email below and return a JSON object.
-
-        The JSON object must have the following structure:
-        - "category": Classify the email as "Technical Support", "Financial Inquiry", "General", or "Unproductive".
-        - "urgency": Classify urgency as "High", "Medium", or "Low".
-        - "confidence": A number from 0.0 to 1.0 indicating your confidence in the category classification.
-        - "entities": An object containing extracted information. If not found, return null for the field.
-            - "sender_name": Name of the person or company that sent the email.
-            - "ticket_number": Any protocol, ticket, or request ID.
-            - "company": Name of the company mentioned, if any.
-        - "suggested_response": A professional response in English based on category and content. For high urgency, response should be faster.
-
-        Email to analyze:
-        ---
-        {email_content}
-        ---
-
-        Return ONLY the valid JSON object, without any extra text or explanation.
-        """
-
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",  
-            messages=[
-                {"role": "system", "content": "You are an AI assistant specialized in email analysis and productivity."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.4,
-            response_format={"type": "json_object"}
-        )
+        resposta_api = modelo.generate_content(prompt)
         
-        result_str = response.choices[0].message.content
-        return json.loads(result_str) 
+        resultado_texto = resposta_api.text.replace("```json", "").replace("```", "").strip()
+        return json.loads(resultado_texto)
 
     except Exception as e:
-        print(f"Error with OpenAI API or JSON processing: {e}")
+        print(f"Erro com a API do Gemini ou no processamento do JSON: {e}")
         return {
-            "error": "Unable to process the request via AI. Check the content or try again."
+            "erro": "Não foi possível processar a solicitação via IA. Verifique o conteúdo ou tente novamente."
         }
 
 
 @app.route('/')
-def index():
+def inicio():
     return render_template('index.html')
 
 
-@app.route('/process', methods=['POST'])
-def process_email():
-    email_content = ""
+@app.route('/processar', methods=['POST'])
+def processar_email():
+    conteudo_email = ""
     
     if 'email_text' in request.form and request.form['email_text']:
-        email_content = request.form['email_text']
+        conteudo_email = request.form['email_text']
     elif 'email_file' in request.files:
-        file = request.files['email_file']
-        if file.filename != '':
-            if file.filename.endswith('.txt'):
-                email_content = file.read().decode('utf-8')
-            elif file.filename.endswith('.pdf'):
-                email_content = extract_text_from_pdf(io.BytesIO(file.read()))
-                if email_content is None:
-                    return jsonify({"error": "Unable to read PDF file."}), 400
+        arquivo = request.files['email_file']
+        if arquivo.filename != '':
+            if arquivo.filename.endswith('.txt'):
+                conteudo_email = arquivo.read().decode('utf-8')
+            elif arquivo.filename.endswith('.pdf'):
+                conteudo_email = extrair_texto_do_pdf(io.BytesIO(arquivo.read()))
+                if conteudo_email is None:
+                    return jsonify({"erro": "Não foi possível ler o arquivo PDF."}), 400
         else:
-             return jsonify({"error": "No email content provided."}), 400
+            return jsonify({"erro": "Nenhum arquivo selecionado."}), 400
     
-    if not email_content:
-        return jsonify({"error": "Email content is empty."}), 400
+    if not conteudo_email:
+        return jsonify({"erro": "Nenhum conteúdo de email fornecido."}), 400
 
-    ai_result = analyze_email_with_ai_advanced(email_content)
-    
+    resultado_ia = analisar_email_com_ia(conteudo_email)
 
-    if "error" in ai_result:
-        return jsonify(ai_result), 500
+    if "erro" in resultado_ia:
+        return jsonify(resultado_ia), 500
         
-    return jsonify(ai_result)
+    return jsonify(resultado_ia)
 
 
 if __name__ == '__main__':

@@ -13,30 +13,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 0) {
-            fileLabel.textContent = fileInput.files[0].name; 
-            fileLabel.classList.add('selected'); 
+            fileLabel.textContent = fileInput.files[0].name;
+            fileLabel.classList.add('selected');
         } else {
-            fileLabel.textContent = 'or upload a file';
+            fileLabel.textContent = 'ou envie um arquivo';
             fileLabel.classList.remove('selected');
         }
     });
 
-
     emailForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
+
         vortexContainer.classList.add('processing');
         submitButton.disabled = true;
-        buttonText.textContent = 'Processing...';
-        statusText.textContent = 'Analyzing with AI...';
-        buttonIcon.className = 'spinner-border spinner-border-sm';
+        buttonText.textContent = 'Processando...';
+        statusText.textContent = 'Analisando com IA...';
+        buttonIcon.className = 'spinner'; 
         resultArea.classList.add('d-none');
         errorAlert.classList.add('d-none');
         
         const formData = new FormData(event.target);
 
         try {
-            const response = await fetch('/process', {
+           
+            const response = await fetch('/processar', {
                 method: 'POST',
                 body: formData,
             });
@@ -44,73 +45,83 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Server error occurred.');
+   
+                throw new Error(data.erro || 'Ocorreu um erro no servidor.');
             }
             
             resultArea.classList.remove('d-none');
-            renderResults(data);
+            renderizarResultados(data);
 
         } catch (error) {
-            errorAlert.textContent = `Error: ${error.message}`;
+            errorAlert.textContent = `Erro: ${error.message}`;
             errorAlert.classList.remove('d-none');
         } finally {
+
             vortexContainer.classList.remove('processing');
             submitButton.disabled = false;
-            buttonText.textContent = 'Analyze';
+            buttonText.textContent = 'Analisar';
             statusText.textContent = '';
             buttonIcon.className = 'bi bi-arrow-right-circle';
         }
     });
 
-    function renderResults(data) {
-        setTimeout(() => renderClassification(data), 0);
-        setTimeout(() => renderEntities(data), 200);
-        setTimeout(() => renderResponse(data), 400);
+    function renderizarResultados(data) {
+
+        setTimeout(() => renderizarClassificacao(data), 0);
+        setTimeout(() => renderizarEntidades(data), 200);
+        setTimeout(() => renderizarResposta(data), 400);
     }
 
-    function renderClassification(data) {
-        const card = document.getElementById('card-classification');
-        const confidencePercent = (data.confidence * 100).toFixed(0);
+    function renderizarClassificacao(data) {
+        const card = document.getElementById('card-classificacao');
+
+        const confiancaPercent = (data.confianca * 100).toFixed(0);
         card.style.animationDelay = '0s';
         card.innerHTML = `
-            <h4><i class="bi bi-tags-fill"></i> Classification</h4>
-            <p><strong>Category:</strong> <span class="badge" style="background-color: ${getColor(data.category, 'cat')}">${data.category}</span></p>
-            <p><strong>Urgency:</strong> <span class="badge" style="background-color: ${getColor(data.urgency, 'urg')}">${data.urgency}</span></p>
-            <p><strong>Confidence:</strong> ${confidencePercent}%</p>
+            <h4><i class="bi bi-tags-fill"></i> Classificação</h4>
+            <p><strong>Categoria:</strong> <span class="badge" style="background-color: ${getColor(data.categoria, 'cat')}">${data.categoria}</span></p>
+            <p><strong>Urgência:</strong> <span class="badge" style="background-color: ${getColor(data.urgencia, 'urg')}">${data.urgencia}</span></p>
+            <p><strong>Confiança:</strong> ${confiancaPercent}%</p>
             <div class="progress">
-                <div class="progress-bar" style="width: ${confidencePercent}%"></div>
+                <div class="progress-bar" style="width: ${confiancaPercent}%"></div>
             </div>
         `;
     }
 
-    function renderEntities(data) {
-        const card = document.getElementById('card-entities');
+    function renderizarEntidades(data) {
+        const card = document.getElementById('card-entidades');
         card.style.animationDelay = '0.2s';
         let itemsHTML = '';
-        const entities = data.entities || {};
-        const nameMap = { sender_name: 'Sender', ticket_number: 'Ticket #', company: 'Company' };
+
+        const entidades = data.entidades || {};
+
+        const nomeMap = { remetente: 'Remetente', numero_ticket: 'Nº do Ticket', empresa: 'Empresa' };
         
-        for (const [key, value] of Object.entries(entities)) {
-            itemsHTML += `<p><strong>${nameMap[key] || key}:</strong> ${value || '<em>Not found</em>'}</p>`;
+        for (const [chave, valor] of Object.entries(entidades)) {
+            if (valor) { 
+                itemsHTML += `<p><strong>${nomeMap[chave] || chave}:</strong> ${valor}</p>`;
+            }
         }
-        if (itemsHTML === '') itemsHTML = '<p class="text-muted">No extracted entities.</p>';
+        if (itemsHTML === '') itemsHTML = '<p class="text-muted">Nenhuma entidade extraída.</p>';
         
-        card.innerHTML = `<h4><i class="bi bi-bounding-box-circles"></i> Extracted Data</h4>${itemsHTML}`;
+        card.innerHTML = `<h4><i class="bi bi-bounding-box-circles"></i> Dados Extraídos</h4>${itemsHTML}`;
     }
 
-    function renderResponse(data) {
-        const card = document.getElementById('card-response');
+    function renderizarResposta(data) {
+        const card = document.getElementById('card-resposta');
         card.style.animationDelay = '0.4s';
+
         card.innerHTML = `
-            <h4><i class="bi bi-reply-fill"></i> Suggested Response</h4>
-            <textarea class="email-textarea" rows="5">${data.suggested_response}</textarea>
+            <h4><i class="bi bi-reply-fill"></i> Resposta Sugerida</h4>
+            <textarea class="email-textarea" rows="5" readonly>${data.resposta_sugerida}</textarea>
         `;
     }
     
     function getColor(value, type) {
+
         const colors = {
-            cat: { 'Technical Support': '#3B82F6', 'Financial Inquiry': '#10B981', 'General': '#6B7280', 'Unproductive': '#9CA3AF' },
-            urg: { 'High': '#EF4444', 'Medium': '#F59E0B', 'Low': '#3B82F6' }
+            cat: { 'Suporte Técnico': '#3B82F6', 'Questão Financeira': '#10B981', 'Geral': '#6B7280', 'Improdutivo': '#9CA3AF' },
+            urg: { 'Alta': '#EF4444', 'Média': '#F59E0B', 'Baixa': '#3B82F6' }
         };
         return colors[type][value] || '#1F2937';
     }

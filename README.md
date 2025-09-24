@@ -1,37 +1,42 @@
-# Classificador de Emails com IA 
+# 🚀 Analisador Inteligente de E-mails com IA (Desafio AutoU)
 
-Aplicação web que utiliza a API da OpenAI para classificar emails como "Produtivo" ou "Improdutivo" e sugerir respostas automáticas.
+Uma aplicação web avançada que utiliza a API do Google Gemini para realizar uma análise completa de e-mails, extraindo dados, classificando conteúdo e sugerindo respostas contextuais.
 
-**Link para a aplicação online:** []
+**Link para a aplicação online:** `[COLE AQUI O LINK DA SUA APLICAÇÃO DO RENDER]`
 
-## Funcionalidades
+## ✨ Funcionalidades
 
--   Upload de emails em formato `.txt` ou `.pdf`.
--   Inserção de texto de email diretamente na interface.
--   Classificação automática em **Produtivo** ou **Improdutivo**.
--   Geração de resposta sugerida com base no conteúdo do email.
--   Interface web limpa e responsiva.
+-   **Upload de Arquivos:** Envio de e-mails em formato `.txt` ou `.pdf`.
+-   **Análise por Texto:** Inserção de texto de e-mail diretamente na interface.
+-   **Classificação Avançada:** O conteúdo é classificado em múltiplas categorias ("Suporte Técnico", "Questão Financeira", etc.).
+-   **Análise de Urgência:** Determina a urgência da mensagem como "Alta", "Média" ou "Baixa".
+-   **Extração de Entidades:** Identifica e extrai informações importantes como nome do remetente, número de ticket e nomes de empresas.
+-   **Geração de Resposta:** A IA sugere uma resposta profissional em português, adaptada ao contexto e à urgência do e-mail.
+-   **Interface Moderna:** Interface limpa, intuitiva e agradável.
 
-## Tecnologias Utilizadas
+## 🛠️ Tecnologias e Ferramentas
 
--   **Frontend:** HTML, CSS (Bootstrap), JavaScript
--   **Backend:** Python (Flask)
--   **IA:** OpenAI API (GPT-3.5-Turbo)
--   **Hospedagem:** Vercel
+-   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+-   **Backend:** Python 3, Flask, Gunicorn
+-   **Inteligência Artificial:** Google Gemini API (modelo `gemini-1.5-flash`)
+-   **Bibliotecas Principais:** `google-generativeai`, `PyPDF2`, `python-dotenv`
+-   **Hospedagem:** Render.com
 
-## Como Executar Localmente
+## ⚙️ Como Executar Localmente
 
 1.  **Clone o repositório:**
     ```bash
-    git clone []()
-    cd classificador-emails
+    git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
+    cd seu-repositorio
     ```
 
 2.  **Crie e ative um ambiente virtual:**
     ```bash
     python -m venv venv
-    source venv/bin/activate  # Linux
-    venv\Scripts\activate     # Windows
+    # No Windows
+    venv\Scripts\activate
+    # No Mac/Linux
+    source venv/bin/activate
     ```
 
 3.  **Instale as dependências:**
@@ -40,70 +45,77 @@ Aplicação web que utiliza a API da OpenAI para classificar emails como "Produt
     ```
 
 4.  **Configure as variáveis de ambiente:**
-    -   Crie um arquivo `.env` na raiz do projeto.
-    -   Adicione sua chave da API da OpenAI:
-        `API_KEY="sk-..."`
+    -   Crie um arquivo chamado `.env` na raiz do projeto.
+    -   Adicione sua chave da API do Google Gemini:
+        ```env
+        GEMINI_API_KEY="SUA_CHAVE_GEMINI_AQUI"
+        ```
 
 5.  **Execute a aplicação:**
     ```bash
-    flask run
+    python app.py
     ```
 
 Acesse `http://127.0.0.1:5000` no seu navegador.
 
 ---
 
-# AI Email Classifier - AutoU Challenge
+# 🚀 Intelligent AI Email Analyzer (AutoU Challenge)
 
-Web application that uses the OpenAI API to classify emails as "Productive" or "Unproductive" and suggest automatic responses.
+An advanced web application that leverages the Google Gemini API to perform a complete analysis of emails, extracting data, classifying content, and suggesting contextual responses.
 
-**Link to the live application:** []
+**Link to the live application:** `[PASTE YOUR RENDER APP LINK HERE]`
 
-## Features
+## ✨ Features
 
-- Upload emails in `.txt` or `.pdf` format.
-- Directly paste email text into the interface.
-- Automatic classification as **Productive** or **Unproductive**.
-- Suggested response generation based on email content.
-- Clean and responsive web interface.
+-   **File Upload:** Submit emails in `.txt` or `.pdf` format.
+-   **Text Analysis:** Paste email text directly into the interface.
+-   **Advanced Classification:** Content is classified into multiple categories ("Technical Support", "Financial Inquiry", etc.).
+-   **Urgency Analysis:** Determines the message urgency as "High", "Medium", or "Low".
+-   **Entity Extraction:** Identifies and extracts key information such as sender name, ticket number, and company names.
+-   **Response Generation:** The AI suggests a professional response in Portuguese, tailored to the email's context and urgency.
+-   **Modern Interface:** A clean, intuitive, and pleasant user interface.
 
-## Technologies Used
+## 🛠️ Technologies & Tools
 
-- **Frontend:** HTML, CSS (Bootstrap), JavaScript
-- **Backend:** Python (Flask)
-- **AI:** OpenAI API (GPT-4o-mini)
-- **Hosting:** Vercel (or your preferred hosting)
+-   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+-   **Backend:** Python 3, Flask, Gunicorn
+-   **Artificial Intelligence:** Google Gemini API (`gemini-1.5-flash` model)
+-   **Key Libraries:** `google-generativeai`, `PyPDF2`, `python-dotenv`
+-   **Hosting:** Render.com
 
-## Running Locally
+## ⚙️ Running Locally
 
-1. **Clone the repository:**
+1.  **Clone the repository:**
     ```bash
-    git clone []()
-    cd email-classifier
+    git clone [https://github.com/your-user/your-repo.git](https://github.com/your-user/your-repo.git)
+    cd your-repo
     ```
 
-2. **Create and activate a virtual environment:**
+2.  **Create and activate a virtual environment:**
     ```bash
     python -m venv venv
-    source venv/bin/activate  # Linux
-    venv\Scripts\activate     # Windows
+    # On Windows
+    venv\Scripts\activate
+    # On Mac/Linux
+    source venv/bin/activate
     ```
 
-3. **Install dependencies:**
+3.  **Install dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
 
-4. **Set up environment variables:**
-    - Create a `.env` file in the project root.
-    - Add your OpenAI API key:
+4.  **Set up environment variables:**
+    -   Create a file named `.env` in the project root.
+    -   Add your Google Gemini API key:
         ```env
-        API_KEY="sk-..."
+        GEMINI_API_KEY="YOUR_GEMINI_KEY_HERE"
         ```
 
-5. **Run the application:**
+5.  **Run the application:**
     ```bash
-    flask run
+    python app.py
     ```
 
-Open `http://127.0.0.1:5000` in your web browser.
+Access `http://127.0.0.1:5000` in your browser.

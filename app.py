@@ -5,15 +5,12 @@ import PyPDF2
 import io
 import json
 
-# Importa a biblioteca do Google Gemini
 import google.generativeai as genai
 
-# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 app = Flask(__name__)
 
-# Configura a API do Gemini com a chave do .env
 try:
     genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 except Exception as e:
@@ -35,10 +32,10 @@ def analisar_email_com_ia(conteudo_email):
     """
     Usa a API do Google Gemini com um prompt avançado para análise completa do email.
     """
-    # Usaremos o gemini-1.5-flash, que é rápido e poderoso.
+    
     modelo = genai.GenerativeModel('gemini-2.5-flash')
 
-    # Reutilizamos seu prompt, agora traduzido e pedindo um JSON em português.
+    
     prompt = f"""
     Você é um especialista em análise de emails para uma empresa financeira. Analise o email abaixo e retorne um objeto JSON.
 
@@ -61,10 +58,10 @@ def analisar_email_com_ia(conteudo_email):
     """
 
     try:
-        # A chamada para a API do Gemini é mais direta.
+        
         resposta_api = modelo.generate_content(prompt)
         
-        # O Gemini pode retornar o JSON dentro de ```json ... ```, então limpamos isso.
+        
         resultado_texto = resposta_api.text.replace("```json", "").replace("```", "").strip()
         return json.loads(resultado_texto)
 
@@ -84,10 +81,8 @@ def inicio():
 def processar_email():
     conteudo_email = ""
     
-    # Verifica se o texto foi enviado diretamente no formulário
     if 'email_text' in request.form and request.form['email_text']:
         conteudo_email = request.form['email_text']
-    # Verifica se um arquivo foi enviado
     elif 'email_file' in request.files:
         arquivo = request.files['email_file']
         if arquivo.filename != '':

@@ -1,4 +1,4 @@
-// static/js/script.js - VERSÃO FINAL E CORRIGIDA
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const emailForm = document.getElementById('email-form');
@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
     emailForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        // Prepara a UI para o estado de "processando"
+
         welcomeArea.classList.add('d-none');
         resultArea.classList.add('d-none');
         errorAlert.classList.add('d-none');
-        resultContent.classList.remove('d-none'); // Garante que a área de resultados normais esteja visível
+        resultContent.classList.remove('d-none'); 
         vortexContainer.classList.add('processing');
         submitButton.disabled = true;
         buttonText.textContent = 'Processando...';
@@ -53,19 +53,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             
-            resultArea.classList.remove('d-none'); // Mostra a "sala" de resultados
+            resultArea.classList.remove('d-none'); 
             renderizarResultados(data);
 
         } catch (error) {
-            // CORREÇÃO AQUI: Mostra a "sala" de resultados antes de mostrar a "lâmpada" de erro.
+
             resultArea.classList.remove('d-none');
-            // E esconde a grade de resultados de sucesso, para mostrar SÓ o erro.
+
             resultContent.classList.add('d-none');
 
             errorAlert.textContent = `Erro: ${error.message}`;
             errorAlert.classList.remove('d-none');
         } finally {
-            // Restaura a UI ao estado inicial, independentemente de sucesso ou falha
+
             vortexContainer.classList.remove('processing');
             submitButton.disabled = false;
             buttonText.textContent = 'Analisar';
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // As funções de renderização continuam exatamente iguais
+
     function renderizarResultados(data) {
         setTimeout(() => renderizarClassificacao(data), 0);
         setTimeout(() => renderizarEntidades(data), 200);

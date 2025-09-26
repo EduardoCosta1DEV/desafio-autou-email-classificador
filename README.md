@@ -18,7 +18,7 @@ Uma aplicação web avançada que utiliza a API do Google Gemini para realizar u
 
 -   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 -   **Backend:** Python 3, Flask, Gunicorn
--   **Inteligência Artificial:** Google Gemini API (modelo `gemini-1.5-flash`)
+-   **Inteligência Artificial:** Google Gemini API (modelo `gemini-2.5-flash`)
 -   **Bibliotecas Principais:** `google-generativeai`, `PyPDF2`, `python-dotenv`
 -   **Hospedagem:** Render.com
 
